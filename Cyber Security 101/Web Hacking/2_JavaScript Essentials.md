@@ -94,3 +94,125 @@ Thao tác này sẽ hiển thị mã HTML của trang đã được render. Bên
 
 <img src="../../images/2026-02-01-22-15-07.png" style="display: block; margin: 0 auto;">
 
+## 5. Abusing Dialogue Functions(_Lợi dụng các hàm hội thoại_)
+Một trong những mục tiêu chính của JavaScript là cung cấp các hộp thoại để tương tác với người dùng và cập nhật nội dung động trên các trang web. JavaScript cung cấp các hàm tích hợp sẵn như `alert`, `prompt`, và `confirm` để tạo điều kiện thuận lợi cho sự tương tác này. Các hàm này cho phép các nhà phát triển hiển thị thông báo, thu thập thông tin đầu vào và nhận xác nhận từ người dùng. Tuy nhiên, nếu không được triển khai một cách an toàn, kẻ tấn công có thể khai thác các tính năng này để thực hiện các cuộc tấn công như Cross-Site Scripting (XSS), mà bạn sẽ tìm hiểu sau trong mô-đun này.
+
+Chúng ta sẽ sử dụng chúng  `Google Chrome console` trong các bài tập sắp tới.
+
+### 1. alert
+Chức năng cảnh báo hiển thị một thông báo trong hộp thoại với nút `OK`, thường được sử dụng để truyền đạt thông tin hoặc cảnh báo cho người dùng. Ví dụ, nếu chúng ta muốn hiển thị _" Hello THM"_ cho người dùng, chúng ta sẽ sử dụng nút  `alert("HelloTHM")`;. Để thử, hãy mở bảng điều khiển Chrome, nhập `alert("Hello THM")`, và nhấn Enter. Một hộp thoại với thông báo sẽ xuất hiện trên màn hình.
+
+<img src="../../images/2026-02-02-08-45-28.png" style="display: block; margin: 0 auto;">
+
+### 2. promt
+Hàm `prompt` hiển thị một hộp thoại yêu cầu người dùng nhập liệu. Nó trả về giá trị đã nhập khi người dùng nhấp vào "OK", hoặc trả về null nếu người dùng nhấp vào "Cancel". Ví dụ, để hỏi người dùng tên của họ, chúng ta sẽ sử dụng `prompt("What is your name?")`;.
+
+Để kiểm tra điều này, hãy mở bảng điều khiển Chrome và dán đoạn mã sau, đoạn mã này sẽ yêu cầu người dùng nhập tên đăng nhập rồi gửi lời chào.
+
+<img src="../../images/2026-02-02-08-46-42.png" style="display: block; margin: 0 auto;">
+
+Sau khi bạn dán mã và nhấn Enter, một hộp thoại sẽ hiện ra và giá trị do người dùng nhập sẽ được trả về bảng điều khiển. 
+
+<img src="../../images/2026-02-02-08-47-14.png" style="display: block; margin: 0 auto;">
+
+### 3. confirm
+Hàm xác nhận hiển thị một hộp thoại với thông báo và hai nút: "OK" và "Cancel". Hàm trả về true nếu người dùng nhấp vào "OK" và false nếu người dùng nhấp vào "Cancel". Ví dụ, để yêu cầu người dùng xác nhận, chúng ta sẽ sử dụng `confirm("Are you sure?");`. Để thử điều này, hãy mở bảng điều khiển Chrome, nhập `confirm("Do you want to proceed?")`, và nhấn Enter.
+
+<img src="../../images/2026-02-02-08-49-50.png" style="display: block; 
+margin: 0 auto;">
+
+### 4. Cách kẻ tấn công có thể khai thác
+Hãy tưởng tượng bạn nhận được một email từ người lạ kèm theo một tệp HTML. Tệp này trông có vẻ vô hại, nhưng khi bạn mở nó ra, nó chứa mã JavaScript làm gián đoạn trải nghiệm duyệt web của bạn. Ví dụ, đoạn mã sau sẽ hiển thị hộp thoại cảnh báo với thông báo "Đã bị hack " 3 lần:
+
+<img src="../../images/2026-02-02-08-51-17.png" style="display: block; margin: 0 auto;">
+
+Trên màn hình Desktop của máy ảo được gắn kèm, hãy tạo một tệp có tên `invoice.html` và dán đoạn mã trên vào đó. Nhấp đúp vào tệp để mở, và thông báo lỗi sẽ hiện lên ba lần, gây ra trải nghiệm không mong muốn.
+
+<img src="../../images/2026-02-02-08-51-41.png" style="display: block; margin: 0 auto;">
+
+Hãy tưởng tượng nếu một kẻ xấu gửi cho bạn một tập tin tương tự, nhưng thay vì hiển thị cảnh báo ba lần, số lần hiển thị lại được đặt thành `500`. Bạn sẽ buộc phải liên tục đóng các hộp thoại cảnh báo này đến hộp thoại khác. Đây là một ví dụ đơn giản về cách mã JavaScript độc hại có thể được sử dụng để gây ra sự bất tiện hoặc thậm chí tệ hơn. Do đó, việc đảm bảo bạn chỉ thực thi các tập tin JavaScript từ các nguồn đáng tin cậy là rất quan trọng để tránh những trải nghiệm không mong muốn như vậy.
+
+## 6. Bypassing Control Flow Statements(_Bỏ qua các câu lệnh luồng điều khiển_)
+Luồng điều khiển trong JavaScript đề cập đến thứ tự thực thi các câu lệnh và khối mã dựa trên các điều kiện nhất định. JavaScript cung cấp một số cấu trúc luồng điều khiển như câu lệnh điều kiện (require), `if-else` câu lệnh điều khiển `switch` để đưa ra quyết định, và các vòng lặp như `for`, `while` và ` do...while` để lặp lại các hành động. Sử dụng luồng điều khiển đúng cách đảm bảo rằng chương trình có thể xử lý hiệu quả các điều kiện khác nhau.
+### 1. Câu điều kiện trong thực tiễn
+Một trong những câu lệnh điều kiện được sử dụng nhiều nhất là câu `if-else` lệnh điều kiện (request), cho phép bạn thực thi các khối mã khác nhau tùy thuộc vào việc điều kiện đó đúng `true` hay sai `false`.
+
+Để kiểm tra điều này trên thực tế, hãy tạo một tệp `age.html` trên màn hình Desktop của máy ảo được gắn kèm và dán đoạn mã sau:
+
+<img src="../../images/2026-02-02-08-59-06.png" style="display: block; margin: 0 auto;">
+
+Nhấp đúp vào tệp để mở bằng Google Chrome. Bạn sẽ thấy hình ảnh sau:
+
+<img src="../../images/2026-02-02-09-00-13.png" style="display: block; margin: 0 auto;">
+
+Trong đoạn mã trên, một lời nhắc sẽ hỏi tuổi của bạn. Nếu tuổi của bạn lớn hơn hoặc bằng 18, nó sẽ hiển thị một thông báo có nội dung "You are an adult.". Ngược lại, nó sẽ hiển thị một thông báo khác. Hành vi này được điều khiển bởi câu lệnh **if-else**, kiểm tra giá trị của biến tuổi và hiển thị thông báo thích hợp dựa trên điều kiện.
+
+### 2. Bypassing Login Forms
+Giả sử một lập trình viên đã triển khai chức năng xác thực trong JavaScript, trong đó chỉ những người dùng có tên người dùng "admin" và mật khẩu khớp với một giá trị cụ thể mới được phép đăng nhập. Để xem điều này hoạt động như thế nào, hãy mở `login.html`
+
+<img src="../../images/2026-02-02-09-01-42.png" style="display: block; margin: 0 auto;">
+
+Khi bạn nhấp đúp vào tệp và mở nó trong trình duyệt, hệ thống sẽ yêu cầu bạn nhập tên người dùng và mật khẩu. Nếu nhập đúng thông tin đăng nhập, hệ thống sẽ hiển thị thông báo xác nhận bạn đã đăng nhập thành công, như hình bên dưới:
+
+<img src="../../images/2026-02-02-09-01-57.png" style="display: block; margin: 0 auto;">
+
+## 7. Exploring Minified Files(_Khám phá các tệp tin đã được nén_)
+Cho đến nay, chúng ta đã hiểu cách JavaScript hoạt động và cách đọc mã nguồn của nó, nhưng điều gì sẽ xảy ra nếu tệp tin đó không thể đọc được bằng mắt thường và đã được thu nhỏ lại ?
+
+Thu nhỏ mã JavaScript là quá trình nén các tệp JavaScript bằng cách loại bỏ tất cả các ký tự không cần thiết, chẳng hạn như khoảng trắng, xuống dòng, chú thích và thậm chí cả việc rút ngắn tên biến. Điều này giúp giảm kích thước tệp và cải thiện thời gian tải trang web, đặc biệt là trong môi trường sản xuất. Các tệp đã được thu nhỏ làm cho mã ngắn gọn hơn và khó đọc hơn đối với con người, nhưng chúng vẫn hoạt động chính xác như cũ.
+
+Tương tự, việc **làm rối mã nguồn** thường được sử dụng để khiến JavaScript khó hiểu hơn bằng cách thêm mã không mong muốn, đổi tên biến và hàm thành những tên vô nghĩa, và thậm chí chèn mã giả.
+
+### 1. Ví dụ thực tế
+Tạo một tệp trên màn hình Desktop của máy ảo được gắn kèm với tên `hello.html` và dán đoạn mã HTML sau:
+
+<img src="../../images/2026-02-02-09-07-28.png" style="display: block; margin: 0 auto;">
+
+Tiếp theo, tạo một tệp khác với tên đó `hello.js` và thêm đoạn mã sau:
+
+<img src="../../images/2026-02-02-09-08-35.png" style="display: block; margin: 0 auto;">
+
+Bây giờ, hãy nhấp đúp vào `hello.html` để mở nó trong Google Chrome. Sau khi tệp được mở, bạn sẽ thấy một thông báo chào mừng với nội dung " Welcome to THM".
+
+<img src="../../images/2026-02-02-11-52-13.png" style="display: block; margin: 0 auto;">
+
+Nhấp chuột `OK` để đóng hộp thoại cảnh báo. Nhấp chuột phải vào bất kỳ đâu trên trang và nhấp vào `Inspect` để mở công cụ dành cho nhà phát triển. Trong công cụ dành cho nhà phát triển, điều hướng đến `Sources` và nhấp vào `hello.js` tệp để xem mã nguồn. Bạn sẽ thấy rằng mã JS dễ dàng truy cập và xem được, như hình bên dưới:
+
+<img src="../../images/2026-02-02-11-53-19.png" style="display: block; margin: 0 auto;">
+
+### 2. Obfuscation trong thực tế
+Bây giờ, chúng ta sẽ thử thu nhỏ và làm xáo trộn mã JavaScript bằng một công cụ trực tuyến. Hãy truy cập trang web và sao chép nội dung của `hello.js`, rồi dán vào hộp thoại trên trang web. Công cụ sẽ "nén" và làm xáo trộn mã, biến nó thành một chuỗi ký tự vô nghĩa như hình bên dưới:
+
+<img src="../../images/2026-02-02-11-54-26.png" style="display: block; margin: 0 auto;">
+
+Nhưng nếu chúng tôi nói với bạn rằng những ký tự vô nghĩa này vẫn là mã nguồn hoạt động đầy đủ chức năng thì sao? Sự khác biệt duy nhất là chúng không thể đọc được bằng mắt thường, nhưng trình duyệt vẫn có thể thực thi chúng một cách chính xác. Trang web đã chuyển đổi mã JS của chúng tôi thành mã này:
+
+<img src="../../images/2026-02-02-11-54-48.png" style="display: block; margin: 0 auto;">
+
+Nhấp vào nút Copy to Clipboard(được đánh dấu là số 2 trong hình ảnh trên) như hiển thị trên trang web. Sau đó, xóa nội dung hiện có `hello.js` trên máy ảo được đính kèm và dán nội dung đã được mã hóa vào tệp.
+
+Tải lại `hello.html` trong Google Chrome và kiểm tra lại mã nguồn trong `Sources` đó. Bạn sẽ nhận thấy rằng mã hiện đã được làm mờ nhưng vẫn hoạt động chính xác như trước.
+
+<img src="../../images/2026-02-02-11-55-52.png" style="display: block; margin: 0 auto;">
+
+### 3. Giải mã Obfuscation
+Chúng ta cũng có thể giải mã mã nguồn bị làm mờ bằng công cụ trực tuyến. Hãy truy cập trang web , sau đó dán mã bị làm mờ vào hộp thoại được cung cấp. Trang web sẽ tạo ra mã JavaScript tương đương, dễ đọc, giúp bạn dễ dàng hiểu và phân tích kịch bản gốc hơn.
+
+<img src="../../images/2026-02-02-11-56-36.png" style="display: block; margin: 0 auto;">
+
+## 8. Best Practices
+Bài tập này nêu rõ các phương pháp tốt nhất để đánh giá một trang web hoặc viết mã cho một trang web. Nếu bạn đang phát triển một ứng dụng web, rất có thể bạn sẽ sử dụng JavaScript trên trang web của mình. Các phương pháp dưới đây sẽ giúp bạn giảm thiểu bề mặt tấn công và giảm thiểu nguy cơ bị tấn công. 
+
+### 1. Tránh chỉ dựa vào xác thực phía máy khách.
+Một trong những chức năng chính của JavaScript là thực hiện xác thực phía máy khách. Đôi khi, các nhà phát triển sử dụng nó để xác thực biểu mẫu và hoàn toàn dựa vào nó, điều này không phải là một thực hành tốt. Vì người dùng có thể **vô hiệu hóa/thao tác** JavaScript ở phía máy khách, nên việc thực hiện xác thực ở phía máy chủ cũng rất cần thiết.
+
+### 2. Tránh thêm các thư viện không đáng tin cậy
+Như đã thảo luận trong các bài tập trước, JavaScript cho phép bạn bao gồm bất kỳ tập lệnh JavaScript nào khác bằng cách sử dụng thuộc tính `src` bên trong thẻ `<script>`. Nhưng bạn đã cân nhắc xem thư viện mà chúng ta bao gồm có đến từ một nguồn đáng tin cậy hay không? Những kẻ xấu đã tải lên một loạt thư viện trên internet với tên gọi giống với các thư viện hợp pháp. Vì vậy, nếu bạn mù quáng bao gồm một thư viện độc hại, bạn sẽ khiến ứng dụng web của mình dễ bị tấn công.
+
+### 3. Tránh mã hóa bí mật cứng.
+Tuyệt đối không nên mã hóa cứng các dữ liệu nhạy cảm như khóa API , mã thông báo truy cập hoặc thông tin đăng nhập vào mã JavaScript của bạn, vì người dùng có thể dễ dàng kiểm tra mã nguồn và lấy được mật khẩu. 
+
+<img src="../../images/2026-02-02-16-18-08.png" style="display: block; margin: 0 auto;">
+
+### 4. Thu nhỏ và làm xáo trộn mã JavaScript của bạn
+Việc thu nhỏ và làm xáo trộn mã JavaScript giúp giảm kích thước, cải thiện thời gian tải và khiến kẻ tấn công khó hiểu logic của mã hơn. Do đó, hãy luôn  thu nhỏ  và  làm xáo trộn  mã khi sử dụng mã trong môi trường sản xuất. Kẻ tấn công cuối cùng vẫn có thể đảo ngược kỹ thuật, nhưng việc lấy được mã gốc sẽ tốn ít nhất một số công sức. 
