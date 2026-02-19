@@ -55,6 +55,7 @@ Ta có thể dễ dàng nhận ra rằng `T` trở thành `W`, `R` trở thành 
 - Văn bản mã hóa: `WUBKDFNPH`
 - Mã số: **3**
 - Mật mã: **Mật mã Caesar**
+
 ![2026-01-27-10-43-36](../../images/2026-01-27-10-43-36.png)
 
 ## 5. Types of Encryption
