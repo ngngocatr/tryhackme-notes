@@ -117,4 +117,65 @@ Tất cả các nhật ký này cung cấp một lượng thông tin phong phú 
 Dưới đây là ví dụ về cách Splunk cung cấp nhiều phương pháp khác nhau để thu thập nhật ký:
 <img src="../../images/2026-02-20-22-13-01.png" style="display: block; margin: 0 auto;">
 
-#### 5. 
+## 5. Alerting Process and Analysis(*Quá trình cảnh báo và phân tích*)
+### 1. Đằng sau những cảnh báo được kích hoạt
+Chúng ta đã biết rằng giải pháp SIEM phát hiện các mối đe dọa bằng cách đối chiếu nhật ký từ các nguồn nhật ký và kích hoạt cảnh báo, nhưng liệu chúng ta có hiểu được "bí quyết" đằng sau những phát hiện này?
+
+Giải pháp SIEM có các quy tắc phát hiện giúp bắt giữ các mối đe dọa. Các quy tắc này đóng vai trò quan trọng trong việc phát hiện mối đe dọa kịp thời, cho phép các nhà phân tích hành động đúng lúc. Các quy tắc phát hiện về cơ bản là các biểu thức logic được thiết lập để kích hoạt. Một vài ví dụ về quy tắc phát hiện là:
+- Nếu người dùng đăng nhập không thành công năm lần trong vòng 10 giây, hãy đưa ra cảnh báo `Multiple Failed Login Attempts`
+- Nếu đăng nhập thành công sau nhiều lần đăng nhập thất bại, hãy tạo cảnh báo `Successful Login After multiple Login Attempts`
+- Một quy tắc đã được thiết lập để cảnh báo mỗi khi người dùng cắm USB (Hữu ích nếu việc sử dụng USB bị hạn chế theo chính sách của công ty).
+- Nếu lưu lượng truy cập đi ra vượt quá 25 MB, hãy đưa ra cảnh báo về khả năng rò rỉ dữ liệu (Thông thường, điều này phụ thuộc vào chính sách của công ty).
+
+### 2. Quy tắc phát hiện được tạo ra như thế nào?
+Để giải thích cách thức hoạt động của quy tắc này, hãy xem xét các trường hợp sử dụng Nhật ký sự kiện sau:
+#### 1. Trường hợp sử dụng 1
+Kẻ thù thường xóa nhật ký trong giai đoạn sau khi khai thác để xóa dấu vết của chúng. Một ID sự kiện duy nhất là `104` được ghi lại mỗi khi người dùng cố gắng xóa hoặc làm sạch nhật ký sự kiện. Để tạo một quy tắc dựa trên hoạt động này, chúng ta có thể đặt điều kiện như sau:
+
+Quy tắc: Nếu nguồn nhật ký là WinEventLog VÀ EventID là 104 - Kích hoạt cảnh báo `Event Log Cleared`
+#### 2. Trường hợp sử dụng 2
+Kẻ thù sử dụng các lệnh như `whoami` sau giai đoạn khai thác/leo thang đặc quyền. Các trường sau đây sẽ hữu ích để đưa vào quy tắc.
+- **Nguồn nhật ký**: Xác định nguồn nhật ký ghi lại các sự kiện.
+- **Mã sự kiện**: Mã sự kiện nào được liên kết với hoạt động Thực thi quy trình? Trong trường hợp này, Mã sự kiện `4688` sẽ hữu ích.
+- **NewProcessName**: Tên quy trình nào sẽ hữu ích để đưa vào quy tắc?
+
+Quy tắc: Nếu Nguồn nhật ký là WinEventLog VÀ Mã sự kiện là `4688`, và NewProcessName chứa `whoami`, thì Kích hoạt CẢNH BÁO `WHOAMI command Execution DETECTED`
+
+Trong bài tập trước, tầm quan trọng của các cặp *fiel-value* đã được thảo luận. Các quy tắc phát hiện theo dõi giá trị của một số trường nhất định để kích hoạt chúng. Đó là lý do tại sao việc thu thập nhật ký đã được chuẩn hóa lại quan trọng.
+
+### 3. Điều tra cảnh báo
+Khi giám sát SIEM , các nhà phân tích dành phần lớn thời gian cho bảng điều khiển, vì chúng hiển thị nhiều chi tiết quan trọng về mạng một cách tóm tắt. Khi một cảnh báo được kích hoạt, các sự kiện/luồng liên quan đến cảnh báo sẽ được kiểm tra và quy tắc được kiểm tra để xem điều kiện nào được đáp ứng. Dựa trên quá trình điều tra, nhà phân tích sẽ xác định xem đó là cảnh báo Đúng hay Sai. Một số hành động được thực hiện sau khi phân tích là:
+- Cảnh báo này là cảnh báo sai. Có thể cần điều chỉnh quy tắc để tránh các cảnh báo sai tương tự xảy ra lần nữa.
+- Cảnh báo này là kết quả dương tính thật. Cần tiến hành điều tra thêm.
+- Hãy liên hệ với chủ sở hữu tài sản để hỏi về hoạt động đó.
+- Đã xác nhận có hoạt động đáng ngờ. Cách ly hệ thống bị nhiễm.
+- Chặn địa chỉ IP đáng ngờ.
+
+## 6. Lab Work
+Trong bài thực hành tĩnh đính kèm, một bảng điều khiển mẫu và các sự kiện được hiển thị. Khi có hoạt động đáng ngờ xảy ra, một cảnh báo sẽ được kích hoạt, điều này có nghĩa là một số sự kiện phù hợp với điều kiện của một số quy tắc đã được cấu hình. Hoàn thành bài thực hành và trả lời các câu hỏi sau.
+
+<img src="../../images/2026-02-21-20-31-02.png" style="display: block; margin: 0 auto;">
+
+*1. Sau khi nhấp vào nút "Bắt đầu hoạt động đáng ngờ", tiến trình nào đã gây ra cảnh báo?*
+<img src="../../images/2026-02-21-20-33-16.png" style="display: block; margin: 0 auto;">
+
+<img src="../../images/2026-02-21-20-33-48.png" style="display: block; margin: 0 auto;">
+
+`cudominer.exe`
+*2. Hãy tìm sự kiện gây ra cảnh báo và xác định người dùng chịu trách nhiệm thực thi quy trình đó.*
+
+<img src="../../images/2026-02-21-20-37-39.png" style="display: block; margin: 0 auto;">
+
+`Chris`
+
+*3. Tên máy ch
+
+HR_02ủ của người dùng khả nghi là gì?*
+
+<img src="../../images/2026-02-21-20-38-47.png" style="display: block; margin: 0 auto;">
+
+`HR_02`
+
+*4. Hãy xem xét quy tắc và quy trình đáng ngờ; thuật ngữ nào khớp với quy tắc đã gây ra cảnh báo?*
+<img src="../../images/2026-02-21-20-40-06.png" style="display: block; margin: 0 auto;">
+
