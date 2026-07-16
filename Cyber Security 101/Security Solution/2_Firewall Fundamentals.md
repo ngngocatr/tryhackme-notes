@@ -207,7 +207,7 @@ Rule added (v6)
 
 Để liệt kê tất cả các quy tắc đang hoạt động theo thứ tự số, bạn có thể sử dụng lệnh sau:
 
-```
+```bash
 user@ubuntu:~$ sudo ufw status numbered
      To                         Action      From
      --                         ------      ----
